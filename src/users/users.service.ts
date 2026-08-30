@@ -17,14 +17,14 @@ export class UsersService {
     private readonly userRepository: Repository<User>,
   ) {}
   async create(createUserDto: CreateUserDto): Promise<User> {
-    try {
-      const newUser = this.userRepository.create(createUserDto);
+    const alreadyUser = await this.findOneByMobile(createUserDto.mobile, true);
+    if (!alreadyUser) {
+      const newUser: User = this.userRepository.create(createUserDto);
 
       return await this.userRepository.save(newUser);
-    } catch (error) {
-      console.log(error);
+    } else {
       throw new BadRequestException(
-        `هنگام ایجاد کاربر جدید خطایی رخ داد: ${error}`,
+        'کاربری با این شماره موبایل قبلا وارد سیستم شده است!',
       );
     }
   }
@@ -44,7 +44,20 @@ export class UsersService {
     // return await this.userRepository.findOne({ where: { id: id } });
     const user = await this.userRepository.findOneBy({ id });
 
-    if (!user) throw new NotFoundException(`کاربر با آیدی ${id} یافت نشد!****`);
+    if (!user) throw new NotFoundException(`کاربر با آیدی ${id} یافت نشد!`);
+
+    return user;
+  }
+
+  async findOneByMobile(mobile: string, checkExist: boolean = false) {
+    // return await this.userRepository.findOne({ where: { id: id } });
+    const user = await this.userRepository.findOneBy({ mobile });
+
+    if (!checkExist)
+      if (!user)
+        throw new NotFoundException(
+          `کاربر با شماره موبایل ${mobile} یافت نشد!`,
+        );
 
     return user;
   }
