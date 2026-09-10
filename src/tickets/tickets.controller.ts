@@ -1,25 +1,54 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Res,
+  HttpStatus,
+} from '@nestjs/common';
 import { TicketsService } from './tickets.service';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { UpdateTicketDto } from './dto/update-ticket.dto';
+import type { Response } from 'express';
 
 @Controller('tickets')
 export class TicketsController {
   constructor(private readonly ticketsService: TicketsService) {}
 
   @Post()
-  create(@Body() createTicketDto: CreateTicketDto) {
-    return this.ticketsService.create(createTicketDto);
+  async create(@Body() createTicketDto: CreateTicketDto, @Res() res: Response) {
+    const ticket = await this.ticketsService.create(createTicketDto);
+
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      data: ticket,
+      message: 'تیکت مورد نظر با موفقیت ایجاد شد.',
+    });
   }
 
   @Get()
-  findAll() {
-    return this.ticketsService.findAll();
+  async findAll(@Res() res: Response) {
+    const tickets = await this.ticketsService.findAll();
+
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      data: tickets,
+      message: 'لیست تیکت ها با موفقیت دریافت شد.',
+    });
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.ticketsService.findOne(+id);
+  async findOne(@Param('id') id: string, @Res() res: Response) {
+    const ticket = await this.ticketsService.findOne(+id);
+
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      data: ticket,
+      message: 'تیکت مورد نظر بازیابی شد.',
+    });
   }
 
   @Patch(':id')
