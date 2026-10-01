@@ -112,4 +112,14 @@ export class ProductsService {
       return await this.bookmarkProductRepostitory.save(newBookmark);
     }
   }
+
+  async addItemToBasket(user_id: number, product_id: number) {
+    const product = await this.findOne(product_id);
+
+    return await this.userService.addProductToBasket(user_id, product);
+  }
+
+  async removeItemFromBasket(userId: number, productId: number) {
+    return await this.userService.removeProductFromBasket(userId, productId);
+  }
 }

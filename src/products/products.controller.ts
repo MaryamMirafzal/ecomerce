@@ -88,4 +88,38 @@ export class ProductsController {
       message: 'محصول با موفقیت اضافه شد!',
     });
   }
+
+  @Post('add-basket')
+  async addItemToBasket(
+    @Body() bookmarkProduct: BookmarkProductDto,
+    @Res() res: Response,
+  ) {
+    const bookmarkData = await this.productsService.addItemToBasket(
+      +bookmarkProduct.user_id,
+      +bookmarkProduct.product_id,
+    );
+
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      data: bookmarkData,
+      message: 'محصول با موفقیت به سبد خرید اضافه شد!',
+    });
+  }
+
+  @Post('remove-basket')
+  async removeItemFromBasket(
+    @Body() bookmarkProduct: BookmarkProductDto,
+    @Res() res: Response,
+  ) {
+    const bookmarkData = await this.productsService.removeItemFromBasket(
+      +bookmarkProduct.user_id,
+      +bookmarkProduct.product_id,
+    );
+
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      data: bookmarkData,
+      message: 'محصول با موفقیت از سبد خرید حذف شد!',
+    });
+  }
 }

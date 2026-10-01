@@ -10,6 +10,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { BookmarkProduct } from './bookmark-product.entity';
+import { User } from 'src/users/entities/user.entity';
 
 @Entity('products')
 export class Product {
@@ -41,6 +42,9 @@ export class Product {
     inverseJoinColumns: [{ name: 'category_id', referencedColumnName: 'id' }],
   })
   categories!: Category[];
+
+  @ManyToMany(() => User, (user) => user.basket_items)
+  baskets!: User[];
 
   @OneToMany(() => BookmarkProduct, (bookmark) => bookmark.product)
   bookmarks!: BookmarkProduct[];

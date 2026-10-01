@@ -9,6 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import UserRoleEnum from './enums/userRoleEnum';
+import { Product } from 'src/products/entities/product.entity';
 
 @Injectable()
 export class UsersService {
@@ -81,5 +82,44 @@ export class UsersService {
 
     if (result.affected == 0)
       throw new NotFoundException(`کاربر با آیدی ${id} یافت نشد!`);
+  }
+
+  async addProductToBasket(user_id: number, product: Product) {
+    const user = await this.userRepository.findOne({
+      where: { id: user_id },
+      relations: { basket_items: true },
+    });
+
+    if (!user) {
+      throw new NotFoundException('کاربر یافت نشد');
+    }
+
+    user.basket_items.push(product);
+
+    return await this.userRepository.save(user);
+  }
+
+  async removeProductFromBasket(user_id: number, product_id: number) {
+    const user = await this.userRepository.findOne({
+      where: { id: user_id },
+      relations: { basket_items: true },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const prodctIndex = user.basket_items.findIndex(
+      (item) => item.id === product_id,
+    );
+
+    if (prodctIndex === -1) {
+      throw new NotFoundException('product not found in the basket');
+    }
+
+    // start from product index and delete one item
+    user.basket_items.splice(prodctIndex, 1);
+
+    return await this.userRepository.save(user);
   }
 }
