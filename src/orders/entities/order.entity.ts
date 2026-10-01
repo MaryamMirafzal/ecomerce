@@ -11,6 +11,7 @@ import {
 import { User } from 'src/users/entities/user.entity';
 import OrderStatusEnum from '../enums/order-status.enum';
 import { Address } from 'src/address/entities/address.entity';
+import { OrderItem } from './order-items.entity';
 
 @Entity('orders')
 export class Order {
@@ -36,6 +37,9 @@ export class Order {
   @ManyToOne(() => Address, (address) => address.orders)
   @JoinColumn({ name: 'address_id' })
   address!: Address;
+
+  @OneToMany(() => OrderItem, (OrderItem) => OrderItem.order)
+  items!: OrderItem[];
 
   @Column({ type: 'bigint' })
   total_price!: number;
